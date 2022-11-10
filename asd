@@ -1,6 +1,6 @@
 ---
 eip: 
-title: Unique NFT linking Physical good
+title: Unique NFT linking especific physical good
 description: Minimal interface for linking ownership of EIP-721 NFT to a physical chip
 author: adanlg55555 (@adanlg55555)
 discussions-to: 
@@ -8,7 +8,7 @@ status:
 type: Standards Track
 category: ERC
 created: 2022-09-11
-requires: 191, 721
+requires: 721
 ---
 
 ## Abstract
@@ -36,7 +36,7 @@ This approach requires that the physical item must have a chip attached to it th
 - The chip can securely generate and store an ECDSA secp256k1 asymmetric key pair;
 - The chip can sign messages using the private key of the previously-generated asymmetric key pair;
 - The chip exposes the public key; and
-- The private key cannot be extracted
+- The private key cannot be extracted (preferably stored on a Secure Element)
 
 
 ### Approach
@@ -53,16 +53,47 @@ Also, you can provee the authenticity of the watch at any time, checking if the 
 
 
 
-### Interface
+### Specification
+
+This is the technical explanation of the smart contract.
+
+#### Before deployment
+
+Open your IDE (Eg: Remix) 
+Import
+
+```solidity
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+´´´
+Display all the code by using the falttener or other tool.
+
+#### Interface
 
 ```solidity
 
-interface IERC5791 {
-    /// @notice Returns the token id for a given chip address.
-    /// @dev Throws if there is no existing token for the chip in the collection.
-    /// @param chipAddress The address for the chip embedded in the physical item (computed from the chip's public key).
-    /// @return The token id for the passed in chip address.
-    function tokenIdFor(address chipAddress) external view returns (uint256);
+interface IERCNumber {
+    
+    /// @notice Erase some functions that are not going to be available, neither its inside code
+    /* function renounceOwnership() public virtual onlyOwner
+    /* function _burn(uint256 tokenId) internal virtual {
+    
+    /// @notice remove all possible approval because the chip is going to be the unique capable of interact with some functions
+    /* event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+    /* event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+    /* function approve(address to, uint256 tokenId) external;
+    /* function setApprovalForAll(address operator, bool _approved) external;
+    /* function getApproved(uint256 tokenId) external view returns (address operator);
+    /*
+    
+
+    /// @notice remove the tokenId transfers and their overrides to simplify only to the transferFrom function
+    /* function safeTransferFrom(
+    /* function _safeTransfer(
+    
+    -----
 
     /// @notice Returns true if the chip for the specified token id is the signer of the signature of the payload.
     /// @dev Throws if tokenId does not exist in the collection.
