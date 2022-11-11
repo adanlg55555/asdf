@@ -80,21 +80,70 @@ interface IERCNumber {
     /* function renounceOwnership() public virtual onlyOwner
     /* function _burn(uint256 tokenId) internal virtual {
     
-    /// @notice remove all possible approval because the chip is going to be the unique capable of interact with some functions
+    /// @notice remove all possible approval because the chip is going to be the unique entity capable of interact with some functions
     /* event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
     /* event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
     /* function approve(address to, uint256 tokenId) external;
     /* function setApprovalForAll(address operator, bool _approved) external;
     /* function getApproved(uint256 tokenId) external view returns (address operator);
-    /*
+    /* function isApprovedForAll(address owner, address operator) external view returns (bool);
     
 
     /// @notice remove the tokenId transfers and their overrides to simplify only to the transferFrom function
     /* function safeTransferFrom(
     /* function _safeTransfer(
     
-    -----
+    
+    bool public authorized = false;	
+    
+    function transferAuthorized() public onlyOwner {	
+    authorized = true;	
+    }
+    
+    function transferNotAuthorized() public onlyOwner {	
+    authorized = false;	
+    }
+    
+    ///@notice set a variable
+    uint public authenticOwner = 0;
+    ///@notice when you first send the ownership to the chip's address, this function would not be available again
+    function transferOwnership(address newOwner) public onlyOwner {	
+    require(newOwner != address(0), "Ownable: new owner is the zero address");	
+    require(authenticOwner < 1, "failed transaction");	
+    authenticOwner = 1;	
+    _transferOwnership(newOwner);	
+    }
+    
+    ///@notice 
+    function transferFrom(
+    address from,	
+    uint256 tokenId
+    ) public virtual override {
+    require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner nor approved");
+    require(authorized == true);
+    
+    
+    function _afterTokenTransfer(
+    address from,	
+    ) internal virtual {
+    authorized = false;
+    }
+    
+    
+    uint public MAX_SUPPLY = 1;
+    
+    
+    function safeMint(address to) public onlyOwner {	
+    require(totalSupply() < MAX_SUPPLY, "Can't mint more");	
+    uint256 tokenId = _tokenIdCounter.current();	
+    _tokenIdCounter.increment();	
+    _safeMint(to, tokenId);	
+    }
+   
 
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
     /// @notice Returns true if the chip for the specified token id is the signer of the signature of the payload.
     /// @dev Throws if tokenId does not exist in the collection.
     /// @param tokenId The token id.
